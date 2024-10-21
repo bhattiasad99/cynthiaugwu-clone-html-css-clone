@@ -1,0 +1,152 @@
+.nav {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    height: 11rem;
+    align-items: center;
+    font-weight: 500;
+}
+
+.nav .menu-icon {
+    background-color: transparent;
+    color: var(--text);
+    outline: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 0.4rem;
+}
+
+.nav .menu-icon::before {
+    content: "";
+    position: absolute;
+    background-color: white;
+    height: 0.4px;
+    /* left: 0; */
+    /* right: 0; */
+    bottom: 0;
+    /* width: 1px; */
+    /* opacity: 0; */
+    opacity: 0;
+}
+
+.nav:hover .menu-icon::before {
+    animation: nav-highlighter-bottom 0.4s ease-in-out 0s forwards;
+}
+
+.nav .menu-icon:not(:hover)::before {
+    animation: nav-highlighter-exit 0.4s forwards; /* Use exit animation when not hovering */
+}
+
+
+.hero {
+
+}
+
+.hero .page_title {
+    padding-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    text-transform: uppercase;
+}
+
+.heading-large {
+    font-size: 10vw;
+    font-weight: 500;
+    color: var(--large-text);
+}
+
+.product {
+    align-self: flex-start;
+}
+
+.designer,.toronto {
+    align-self: flex-end;
+}
+
+.product {
+    margin-bottom: -5vw;
+}
+
+.toronto {
+    margin-top: -2rem;
+}
+
+.popin-container {
+    overflow: hidden;
+}
+
+.popin-container > span {
+    display: inline-block;
+    opacity: 0;
+}
+
+.popin {
+    transform: translateY(100%);
+    animation: enterIn 1.2s ease-out 0s forwards;
+}
+
+.popin-top {
+    transform: translateY(-100%);
+    animation: enterIn 1.2s ease-out 0s forwards;
+}
+
+.slow {
+    animation: enterIn 2s ease-out 0s forwards;
+}
+
+.subtext {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    padding-top: 17.5rem;
+}
+
+@keyframes enterIn {
+    100% {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
+
+@keyframes nav-highlighter-exit {
+    0% {
+        width: 100%;
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        width: 0;
+        opacity: 0; /* Fade out to invisible */
+        /* right: 0; */
+    }
+}
+
+@keyframes nav-highlighter-bottom {
+    1% {
+        opacity: 1;
+        width: 1%;
+    }
+
+    100% {
+        width: 100%;
+        opacity: 1;
+    }
+
+    /* 99% {
+        width: 1;
+        right: 0;
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    } */
+}

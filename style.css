@@ -2,3 +2,5 @@
 @import url('./styles/utils.css');
 @import url('./styles/base.css');
 @import url('./styles/hero.css');
+@import url('./styles/overlay.css');
+@import url('./styles/cursor.css');

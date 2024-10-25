@@ -1,0 +1,11 @@
+.circle {
+    position: fixed;
+    height: calc(2 * var(--large-cursor-radius));
+    width: calc(2 * var(--large-cursor-radius));
+    background-color: white;
+    border-radius: 50%;
+    top: calc(var(--large-cursor-radius) * -1);
+    left: calc(var(--large-cursor-radius) * -1);
+    pointer-events: none;
+    z-index: 9;
+}

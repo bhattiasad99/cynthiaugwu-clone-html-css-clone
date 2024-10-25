@@ -8,4 +8,5 @@
     left: calc(var(--large-cursor-radius) * -1);
     pointer-events: none;
     z-index: 9;
+    mix-blend-mode: difference;
 }

@@ -45,7 +45,7 @@ const moveCursor = () => {
 
     // convert the velocity into range 0, 0.5 (we need this because 0.5 is maximum bend and 0 is minimum bend. The more velocity the more bend)
 
-    const maxRange = 0.5;
+    const maxRange = 0.3;
 
     // use ratio proportion
     // lets say our mouseVelocity is 75. Our max velocity is 150. Now we know that max velocity will be mapped to 0 and its direct proportion so:

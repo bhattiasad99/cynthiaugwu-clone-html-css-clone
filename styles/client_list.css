@@ -5,17 +5,19 @@
     border-top: 1px solid var(--large-text-inverse);
     border-bottom: 1px solid var(--large-text-inverse);
     white-space: nowrap;
+    position: relative;
 }
 
 .carousal {
     display: inline-flex;
     gap: 10rem;
     animation: carousal 15s linear infinite;
+    will-change: transform;
 }
 
-.carousal:hover {
+/* .carousal:hover {
     animation-play-state: paused;
-}
+} */
 
 .client_logo {
     height: 62px;

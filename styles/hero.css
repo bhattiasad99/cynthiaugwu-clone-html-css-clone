@@ -146,7 +146,7 @@
 .hero-bottom__center {
     display: flex;
     /* align-items: center; */
-    justify-content: center;
+    justify-content: flex-end;
 }
 
 .hero-bottom__left {
@@ -154,7 +154,7 @@
 }
 
 .hero-bottom__left > div {
-    width: 70%;
+    /* width: 70%; */
 }
 
 .hero-bottom__right {

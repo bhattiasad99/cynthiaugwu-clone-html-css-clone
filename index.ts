@@ -125,8 +125,7 @@ const cursorScaleDueToSpeed = () => {
         const deltaX = details.clientX - previousPositions.x;
         const deltaY = details.clientY - previousPositions.y;
 
-        angle = Math.atan2(deltaY, deltaX)
-
+        angle = (Math.atan2(deltaY, deltaX)) * (180 / Math.PI)
         scaleOptions = {
             x: gsap.utils.clamp(0.6, 1.4, deltaX === 0 || deltaY === 0 ? 0 : deltaX),
             y: gsap.utils.clamp(0.6, 1.4, deltaX === 0 || deltaY === 0 ? 0 : deltaY),
@@ -161,6 +160,8 @@ portfolioSection?.addEventListener('mouseenter', (details) => {
     cursor.style.justifyContent = 'center';
     cursor.style.alignItems = 'center';
     cursor.style.color = '#000000';
+    cursor.style.mixBlendMode = 'normal';
+    cursor.style.backgroundColor = `rgba(255,255,255, 0.8)`
 })
 
 portfolioSection?.addEventListener('mouseleave', (details) => {
@@ -172,6 +173,8 @@ portfolioSection?.addEventListener('mouseleave', (details) => {
     cursor.style.alignItems = 'center';
     cursor.style.color = '#000000';
     cursor.textContent = "";
+    cursor.style.mixBlendMode = 'difference';
+    cursor.style.backgroundColor = `rgba(255,255,255, 1)`
 })
 
 const mouseFollow = (htmlElement: HTMLElement, mousePosition: Position, scaleOpts: Position, rotateOpts: number) => {
@@ -193,13 +196,47 @@ const circleMouseFollower = () => {
     })
 }
 
+const { width: cursorWidth, height: cursorHeight } = cursor.getBoundingClientRect();
+
 portfolioItems.forEach(eachPortfolio => {
-    eachPortfolio.addEventListener('mouseenter', (details) => {
+    let previousX = 0;
+    // let diff = 0;
+    eachPortfolio.addEventListener('mousemove', (details) => {
         const imgContainer = eachPortfolio.querySelector('.hover_img_container') as HTMLElement;
-        const translate = `translate(${details.clientX + scrollPosition.x}px, ${details.clientY + scrollPosition.y}px)`;
-        // const scale = `scale(${scaleOpts.x}, ${scaleOpts.y})`;
-        // const rotate = `rotate(${rotateOpts}deg)`;
-        imgContainer.style.transform = `${translate}`;
+        const { left } = eachPortfolio.getBoundingClientRect();
+        const { top, height } = eachPortfolio.getBoundingClientRect();
+        const img = imgContainer.querySelector('img');
+        if (!img) {
+            return;
+        }
+
+        const { width } = img.getBoundingClientRect();
+
+        const distanceFromTop = details.clientY - top - (height / 2) + (cursorHeight);
+        const distanceFromLeft = details.clientX - left - (width / 2) + (cursorWidth);
+
+        const diff = details.clientX - previousX;
+        previousX = details.clientX;
+
+        gsap.to(imgContainer, {
+            opacity: 1,
+            ease: Power1.easeOut,
+            top: distanceFromTop,
+            left: distanceFromLeft,
+            duration: 0.4,
+            rotate: gsap.utils.clamp(-20, 20, diff * 0.6)
+        })
+
+
+    })
+
+    eachPortfolio.addEventListener('mouseout', () => {
+        const imgContainer = eachPortfolio.querySelector('.hover_img_container') as HTMLElement;
+        gsap.to(imgContainer, {
+            opacity: 0,
+            ease: Power1.easeOut,
+            duration: 0.4,
+        })
     })
 })
 

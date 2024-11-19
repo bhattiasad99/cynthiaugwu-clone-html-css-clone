@@ -1,75 +1,207 @@
+import gsap from "gsap";
+import LocomotiveScroll from "locomotive-scroll";
+
+type Position = {
+    x: number,
+    y: number
+}
+
+type HTMLNodeList = NodeListOf<HTMLElement>
+
 const cursor = document.getElementById('cursor') as HTMLElement;
+const portfolioItems = document.querySelectorAll('.project_container') as HTMLNodeList;
+const portfolioSection = document.querySelector('#portfolio') as HTMLElement;
+const mainElement = document.querySelector('#main') as HTMLElement;
 
-// current cursor position
-const mouse = {
+const scroll = new LocomotiveScroll({
+    el: mainElement,
+    smooth: true
+});
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* The following method is request animation frame method */
+// // current cursor position
+// const mouse: Position = {
+//     x: 0,
+//     y: 0
+// }
+
+// // previous cursor position on each frame
+// const previousMousePosition: Position = {
+//     x: 0,
+//     y: 0
+// }
+
+// // Current circle position
+// const circle: Position = {
+//     x: 0,
+//     y: 0
+// }
+
+
+// window.addEventListener('mousemove', (e: MouseEvent) => {
+//     mouse.x = e.x;
+//     mouse.y = e.y;
+// })
+
+// const cursorSpeed = 0.17;
+// let currentScale = 0;
+
+// const moveObject = (objectToMove: Position, objectElement: HTMLElement) => {
+//     const animate = () => {
+//         // Core logic inside animate() for moving the object
+//         objectToMove.x = objectToMove.x + ((mouse.x - objectToMove.x) * cursorSpeed);
+//         objectToMove.y = objectToMove.y + ((mouse.y - objectToMove.y) * cursorSpeed);
+//         console.table({ objectToMove, mouse })
+
+//         const mouseXDistanceCovered = mouse.x - previousMousePosition.x;
+//         const mouseYDistanceCovered = mouse.y - previousMousePosition.y;
+
+//         // Pythagoras theorem
+//         const distanceBetweenXAndY = (Math.sqrt((mouseXDistanceCovered ** 2) + (mouseYDistanceCovered ** 2)) * 4);
+//         const maxMouseVelocity = 150;
+//         let mouseVelocity = 0;
+//         if (distanceBetweenXAndY <= maxMouseVelocity) {
+//             mouseVelocity = distanceBetweenXAndY;
+//         } else {
+//             mouseVelocity = maxMouseVelocity;
+//         }
+
+//         // Convert the velocity into range 0, 0.5
+//         const maxRange = 0.3;
+//         const scaleValue = (mouseVelocity * maxRange) / maxMouseVelocity;
+
+//         // Smooth acceleration
+//         currentScale += (scaleValue - currentScale) * cursorSpeed;
+
+//         // Rotate
+//         const angle = Math.atan2(mouseYDistanceCovered, mouseXDistanceCovered) * 180 / Math.PI;
+
+//         previousMousePosition.x = mouse.x;
+//         previousMousePosition.y = mouse.y;
+
+//         const translation = `translateX(${objectToMove.x}px) translateY(${objectToMove.y}px)`;
+//         const scale = `scale(${1 + currentScale}, ${1 - currentScale})`;
+//         const rotate = `rotate(${angle}deg)`;
+
+//         const transformationString = `${translation} ${rotate} ${scale}`;
+
+//         objectElement.style.transform = transformationString;
+
+//         // Continue the animation
+//         window.requestAnimationFrame(animate);
+//     };
+
+//     // Start the animation
+//     window.requestAnimationFrame(animate);
+// };
+// moveObject(circle, cursor)
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* THE FOLLOWING IS ADD EVENT LISTENER METHOD */
+let timer: NodeJS.Timeout;
+
+let scrollPosition: Position = {
     x: 0,
     y: 0
 }
 
-// previous cursor position on each frame
-const previousMousePosition = {
+let scaleOptions: Position = {
     x: 0,
     y: 0
 }
 
-// Current circle position
-const circle = {
-    x: 0,
-    y: 0
-}
+let angle: number = 0;
 
-window.addEventListener('mousemove', (e: MouseEvent) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
-})
-
-const cursorSpeed = 0.17;
-let currentScale = 0;
-
-const moveCursor = () => {
-    circle.x = circle.x + ((mouse.x - circle.x) * cursorSpeed);
-    circle.y = circle.y + ((mouse.y - circle.y) * cursorSpeed);
-
-    const mouseXDistanceCovered = mouse.x - previousMousePosition.x;
-    const mouseYDistanceCovered = mouse.y - previousMousePosition.y;
-
-    // pythagoras theorem
-    const distanceBetweenXAndY = (Math.sqrt((mouseXDistanceCovered ** 2) + (mouseYDistanceCovered ** 2)) * 4);
-    const maxMouseVelocity = 150;
-    let mouseVelocity = 0;
-    if (distanceBetweenXAndY <= maxMouseVelocity) {
-        mouseVelocity = distanceBetweenXAndY;
-    } else {
-        mouseVelocity = maxMouseVelocity;
+const cursorScaleDueToSpeed = () => {
+    let previousPositions = {
+        x: 0,
+        y: 0
     }
 
-    // convert the velocity into range 0, 0.5 (we need this because 0.5 is maximum bend and 0 is minimum bend. The more velocity the more bend)
+    window.addEventListener('mousemove', (details: MouseEvent) => {
+        clearTimeout(timer)
+        const deltaX = details.clientX - previousPositions.x;
+        const deltaY = details.clientY - previousPositions.y;
 
-    const maxRange = 0.3;
+        angle = Math.atan2(deltaY, deltaX)
 
-    // use ratio proportion
-    // lets say our mouseVelocity is 75. Our max velocity is 150. Now we know that max velocity will be mapped to 0 and its direct proportion so:
-    // 150 -> 0.5
-    // 75 -> x
-    const scaleValue = (mouseVelocity * maxRange) / maxMouseVelocity;
+        scaleOptions = {
+            x: gsap.utils.clamp(0.6, 1.4, deltaX === 0 || deltaY === 0 ? 0 : deltaX),
+            y: gsap.utils.clamp(0.6, 1.4, deltaX === 0 || deltaY === 0 ? 0 : deltaY),
+        }
 
-    // to SMOOTHEN this, we use the currentScale variable. We want the acceleration to take place. 
-    currentScale += (scaleValue - currentScale) * cursorSpeed;
+        circleMouseFollower()
 
-    // ROTATE
-    const angle = Math.atan2(mouseYDistanceCovered, mouseXDistanceCovered) * 180 / Math.PI;
+        previousPositions = {
+            x: details.clientX,
+            y: details.clientY,
+        }
 
-    previousMousePosition.x = mouse.x;
-    previousMousePosition.y = mouse.y;
-
-    const translation = `translateX(${circle.x}px) translateY(${circle.y}px)`
-    const scale = `scale(${1 + currentScale}, ${1 - currentScale})`;
-    const rotate = `rotate(${angle}deg)`
-
-    const transformationString = `${translation} ${rotate} ${scale}`
-
-    cursor.style.transform = transformationString;
-    window.requestAnimationFrame(moveCursor);
+        timer = setTimeout(() => {
+            cursor.style.transform = `translate(${details.clientX + scrollPosition.x}px, ${details.clientY + scrollPosition.y}px)`
+        }, 100)
+    })
 }
 
-moveCursor();
+scroll.on('scroll', (args: LocomotiveScroll.OnScrollEvent) => {
+    scrollPosition = {
+        x: args.scroll.x,
+        y: args.scroll.y
+    }
+})
+
+portfolioSection?.addEventListener('mouseenter', (details) => {
+    const radius = 100;
+    cursor.style.width = radius + 'px';
+    cursor.style.height = radius + 'px';
+    cursor.textContent = "VIEW";
+    cursor.style.display = 'flex';
+    cursor.style.justifyContent = 'center';
+    cursor.style.alignItems = 'center';
+    cursor.style.color = '#000000';
+})
+
+portfolioSection?.addEventListener('mouseleave', (details) => {
+    const radius = 20;
+    cursor.style.width = radius + 'px';
+    cursor.style.height = radius + 'px';
+    cursor.style.display = 'flex';
+    cursor.style.justifyContent = 'center';
+    cursor.style.alignItems = 'center';
+    cursor.style.color = '#000000';
+    cursor.textContent = "";
+})
+
+const mouseFollow = (htmlElement: HTMLElement, mousePosition: Position, scaleOpts: Position, rotateOpts: number) => {
+    const translate = `translate(${mousePosition.x + scrollPosition.x}px, ${mousePosition.y + scrollPosition.y}px)`;
+    const scale = `scale(${scaleOpts.x}, ${scaleOpts.y})`;
+    const rotate = `rotate(${rotateOpts}deg)`;
+    htmlElement.style.transform = `${translate} ${scale} ${rotate}`;
+}
+
+const circleMouseFollower = () => {
+    window.addEventListener('mousemove', (details: MouseEvent) => {
+        mouseFollow(cursor, {
+            x: details.clientX,
+            y: details.clientY
+        },
+            scaleOptions,
+            angle
+        )
+    })
+}
+
+portfolioItems.forEach(eachPortfolio => {
+    eachPortfolio.addEventListener('mouseenter', (details) => {
+        const imgContainer = eachPortfolio.querySelector('.hover_img_container') as HTMLElement;
+        const translate = `translate(${details.clientX + scrollPosition.x}px, ${details.clientY + scrollPosition.y}px)`;
+        // const scale = `scale(${scaleOpts.x}, ${scaleOpts.y})`;
+        // const rotate = `rotate(${rotateOpts}deg)`;
+        imgContainer.style.transform = `${translate}`;
+    })
+})
+
+cursorScaleDueToSpeed();
+
